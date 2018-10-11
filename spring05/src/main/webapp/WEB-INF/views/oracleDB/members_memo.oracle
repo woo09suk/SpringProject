@@ -1,0 +1,95 @@
+--friendList 테이블 생성
+create table friendList (
+users_id varchar2(50) not null,
+user_num number not null
+);
+--친구목록 테이블 조회
+select * from friendList;
+--테이블 데이터 삭제
+--delete from friendList;
+--테이블 삭제
+drop table friendList;
+
+desc friendList;
+desc members;
+--members friendList 조인 조회
+--select m.*,f.users_id from members m, friendList f where m.user_num=f.user_num and f.users_id='kim3';
+--select m.*,f.users_id from members m, friendList f where not m.user_num=f.user_num;
+
+--제약조건 members+friendList
+alter table friendList add constraint friendList_usernum_fk
+foreign key(user_num) references members(user_num);
+commit;
+
+--friendList 시퀀스 생성
+create sequence friendList_seq 
+start with 1
+increment by 1;
+drop sequence friendList_seq;
+
+--데이터 50개 입력
+--declare --선언부
+--    i number := 1;
+--begin --실행부
+--    while i<=50 loop
+--        insert into members (user_num,userid,passwd,name,sex,tel1,tel2,tel3,image)
+--        values
+--        ( members_seq.nextval,'kim'||nvl(i,1)
+--        ,'1234', '김철수'||nvl(i,1),'남성','010','1111','1111','basic.jpg');
+--        i := i+1; --조건 변경
+--    end loop;
+--end;
+--/
+
+--members 테이블 생성
+create table members (
+user_num number primary key not null,
+userid varchar2(50) unique not null,
+passwd varchar2(50) not null,
+name varchar2(50) not null,
+sex varchar2(50) not null,
+tel1 varchar2(50) not null,
+tel2 varchar2(50) not null,
+tel3 varchar2(50) not null,
+address1 varchar2(200) not null,
+address2 varchar2(200) not null,
+address3 varchar2(200) not null,
+image varchar2(200),
+context varchar2(200),
+joinDate date default sysdate
+);
+
+--테이블 조회
+select * from members;
+--테이블 삭제
+drop table members;
+--테이블 데이터 삭제
+--delete from members;
+
+--members 시퀀스 생성
+create sequence members_seq 
+start with 1
+increment by 1;
+--members 시퀀스 삭제
+drop sequence members_seq;
+
+CREATE table memo (
+userid varchar2(50) not null,
+idx number not null primary key,
+memo clob,
+--clob  4GB까지 입력가능
+--long  2GB까지 입력가능. 테이블에 1개의 필드만 long으로 지정할 수 있음
+post_date date default sysdate
+);
+--memo 조회
+select * from memo;
+--테이블 데이터 삭제
+--delete from memo;
+--테이블 삭제
+drop table memo;
+
+--memo 제약조건
+alter table memo add constraint memos_userid_fk
+foreign key(userid) references members(userid);
+
+commit;   

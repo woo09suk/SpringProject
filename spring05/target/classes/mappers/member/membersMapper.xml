@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 다른 mapper와 중복되지 않도록 네임스페이스 기재 -->
+<mapper namespace="members">
+
+<select id="login_check" 
+  parameterType="com.example.spring05.model.member.dto.MembersDTO"
+  resultType="String">
+    select name from members
+    where userid=#{userid} and passwd=#{passwd}
+  </select>
+  
+  <select id="viewMember" 
+  resultType="com.example.spring05.model.member.dto.MembersDTO">
+    select * from members
+    where userid=#{userid}
+  </select>
+  
+  <select id="detail"
+  resultType="com.example.spring05.model.member.dto.MembersDTO">
+  	select * from members
+  	where userid=#{userid}
+  </select>
+
+<insert id="insertMember">
+ insert into members (user_num,userid,passwd,name,sex,tel1,tel2,tel3,image,address1,address2,address3) 
+ values (members_seq.nextval,#{userid},#{passwd},#{name},#{sex},#{tel1},#{tel2},#{tel3},'basic.jpg',#{address1},#{address2},#{address3})
+</insert>
+
+<select id="adminList" resultType="com.example.spring05.model.member.dto.MembersDTO">
+ select * from members where not (userid='admin') order by name
+</select>
+
+<select id="listAll" resultType="com.example.spring05.model.member.dto.MembersDTO">
+	select*from members where name like #{keyword}
+</select>
+
+<select id="list" resultType="com.example.spring05.model.member.dto.MembersDTO">
+<![CDATA[select * from 
+(select a.*,TRUNC(DBMS_RANDOM.VALUE(1,10)) as random from members a order by random) 
+where not (userid=#{userid}) and not (userid='admin') and rownum <= 10 order by name]]>
+</select>
+<select id="list2" resultType="com.example.spring05.model.member.dto.MembersDTO">
+select * from members where not (userid='admin') and not (userid=#{users_id})
+</select>
+<select id="countList" resultType="int">
+<![CDATA[select count(*) from 
+(select m.*,TRUNC(DBMS_RANDOM.VALUE(1,10)) as random from members m,friendList f 
+where not (m.user_num=f.user_num) and not (userid=#{users_id}) order by random) 
+where not (userid='admin') and rownum <= 10 order by name]]>
+</select>
+<select id="list_man" resultType="com.example.spring05.model.member.dto.MembersDTO">
+<![CDATA[select * from 
+(select m.*,TRUNC(DBMS_RANDOM.VALUE(1,10)) as random from members m,friendList f 
+where not (m.user_num=f.user_num) and users_id=#{users_id} order by random) 
+where not (userid='admin') and rownum <= 10 and sex='남성' order by name]]>
+</select>
+<select id="list_woman" resultType="com.example.spring05.model.member.dto.MembersDTO">
+<![CDATA[select * from 
+(select m.*,TRUNC(DBMS_RANDOM.VALUE(1,10)) as random from members m,friendList f 
+where not (m.user_num=f.user_num) and users_id=#{users_id} order by random) 
+where not (userid='admin') and rownum <= 10 and sex='여성' order by name]]>
+</select>
+
+<insert id="friendInsert">
+ insert into friendList (users_id,user_num) values (#{users_id},#{user_num})
+</insert>
+
+<select id="friendRequest" resultType="com.example.spring05.model.member.dto.FriendListDTO">
+ select distinct m.*,f.users_id from members m, friendList f where m.user_num=f.user_num and f.users_id=#{users_id}
+</select>
+<select id="friendCount" resultType="int">
+ select count(*) from friendList where users_id=#{users_id}
+</select>
+
+<delete id="friendDelete">
+ delete from friendList where user_num=${user_num}
+</delete>
+
+<update id="updateMembers">
+update members 
+set userid=#{userid},passwd=#{passwd},name=#{name},sex=#{sex},
+tel1=#{tel1},tel2=#{tel2},tel3=#{tel3},address1=#{address1},
+address2=#{address2},address3=#{address3},
+image=#{image} 
+where user_num=#{user_num}
+</update>
+
+<delete id="delete">
+ delete from members where user_num=${user_num}
+</delete>
+
+<select id="useridCheck" resultType="int">
+ select distinct count(*) from members where userid=#{userid}
+</select>
+
+<select id="findId" resultType="com.example.spring05.model.member.dto.MembersDTO">
+ select * from members where name=#{name} and tel1=#{tel1} and tel2=#{tel2} and tel3=#{tel3}
+</select>
+
+<select id="findIdCount" resultType="int">
+ select count(*) from members where name=#{name} and tel1=#{tel1} and tel2=#{tel2} and tel3=#{tel3}
+</select>
+
+<select id="findPw" resultType="com.example.spring05.model.member.dto.MembersDTO">
+ select * from members where userid=#{userid} and name=#{name} and tel1=#{tel1} and tel2=#{tel2} and tel3=#{tel3}
+</select>
+
+<select id="findPwCount" resultType="int">
+ select count(*) from members where userid=#{userid} and name=#{name} and tel1=#{tel1} and tel2=#{tel2} and tel3=#{tel3}
+</select>
+		
+</mapper>
